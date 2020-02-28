@@ -9,21 +9,31 @@ class App extends React.Component {
 
 		//this is the only exception we do direct assignment to this state
 		//initially define state
-		this.state = { lat: null };
+		this.state = { lat: null, errorMessage: '' };
 
 		window.navigator.geolocation.getCurrentPosition(
 			position => {
 				//always use setState to update state
-				this.setState({ lat: position.coords.latitude })
+				this.setState({ lat: position.coords.latitude });
 			},
-			err => console.log(err)
+			err => {
+				this.setState({ errorMessage: err.message });
+			}
 		);
 	};
 
 	//react method -> must have
 	render() {
-		return <div>Latitude: {this.state.lat}</div>
-	};
+		if (this.state.errorMessage && !this.state.lat) {
+			return <div>Error: {this.state.errorMessage}</div>;
+		}
+
+		if (!this.state.errorMessage && this.state.lat) {
+			return <div>Latitude: {this.state.lat}</div>
+		}
+
+		return <div>Loading...</div>;
+	}
 }
 
 ReactDOM.render(
